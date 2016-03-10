@@ -1,0 +1,25 @@
+---
+
+ec2_region: us-west-2
+
+ec2_group: servers
+
+ec2_groups:
+- name: sg-name
+  rules:
+  - proto: tcp
+    from_port: 22
+    to_port: 22
+    cidr_ip: 192.168.0.0/16
+
+ec2_instance:
+  ami: ami-d5c5d1e5
+  keyname: deployer-key
+  type: t2.micro
+  group: sg-name
+  count: 1
+  count_tag:
+    Group: servers
+  instance_tags:
+    Group: servers
+    Name: server

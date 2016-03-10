@@ -1,0 +1,32 @@
+---
+
+- name: create security groups
+  local_action:
+    module: ec2_group
+    name: "{{item.name}}"
+    description: Allow world SSH access
+    region: "{{ec2_region}}"
+    rules: item.rules
+  with_items: ec2_groups
+
+- name: provision instances
+  local_action:
+     module: ec2
+     key_name: "{{ec2_instance.keyname}}"
+     instance_type: "{{ec2_instance.type}}"
+     region: "{{ec2_region}}"
+     image: "{{ec2_instance.ami}}"
+     group: "{{ec2_instance.group}}"
+     wait: "{{ec2_instance.wait|default(true)}}"
+     exact_count: "{{ec2_instance.count}}"
+     count_tag: ec2_instance.count_tag
+     instance_tags: ec2_instance.instance_tags
+  register: ec2
+
+- name: copy launched instances into host group
+  add_host: hostname={{ item.public_ip }} groups={{ec2_group}}
+  with_items: ec2.instances
+
+- name: wait for ssh on instances
+  local_action: wait_for port=22 host="{{item.public_ip}}" search_regex=OpenSSH delay=10
+  with_items: ec2.instances
