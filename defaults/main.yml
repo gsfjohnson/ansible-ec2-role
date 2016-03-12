@@ -4,6 +4,11 @@ ec2_region: us-west-2
 
 ec2_group: servers
 
+ec2_keys: []
+#  - name: key
+#    key_material: "ssh-rsa gjioajioaw.... jdoe@example.org"
+#    state: present
+
 ec2_groups:
 - name: sg-name
   rules:
@@ -13,7 +18,7 @@ ec2_groups:
     cidr_ip: 192.168.0.0/16
 
 ec2_instance:
-  ami: ami-d5c5d1e5
+  image: ami-d5c5d1e5
   keyname: deployer-key
   type: t2.micro
   group: sg-name
